@@ -6,7 +6,8 @@
 
 #define MAX_LINE_LENGTH 1024
 
-void Tokenization(Firm pFirm, char *pLine){
+Firm Tokenization(char *pLine){
+    Firm pFirm;
     char *token;
 
     token = strtok(pLine, ",");
@@ -44,6 +45,8 @@ void Tokenization(Firm pFirm, char *pLine){
 
     token = strtok(NULL, ",");
     pFirm.price = atof(token);
+
+    return pFirm;
 }
 
 
@@ -54,7 +57,8 @@ void Serialize(FILE *csvFileHolder, FILE *binaryFileHolder){
     fwrite(currentLine, strlen(currentLine), 1, binaryFileHolder);
 
     while(fgets(currentLine, MAX_LINE_LENGTH, csvFileHolder) != NULL){
-        Firm firm; 
-
+        Firm firm = Tokenization(currentLine);
+        printf("%d",firm.rowID);
+        fwrite(&firm, sizeof(currentLine), 1, binaryFileHolder);
     }
 }
