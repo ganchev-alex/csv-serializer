@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 typedef struct {
-    
+
     unsigned int rowID;
     char orderID[14];
     char orderDate[10];
@@ -11,9 +11,9 @@ typedef struct {
     unsigned int postalCode;
     char region[10];
     char productID[15];
-    char catgory[35];
+    char category[35];
     char subCategory[25];
-    unsigned int price; 
+    float price; 
 
 } Firm;
 
