@@ -6,6 +6,14 @@
 
 #define MAX_LINE_LENGTH 1024
 
+void AssignStringValues(char **field, char *token){
+    if (*field != NULL) {
+        free(*field);
+    }
+    *field = (char*) malloc(strlen(token)+1);
+    strcpy(*field, token);
+}
+
 void Tokenization(char *pLine, Firm *pFirm){
     char *token;
 
@@ -13,43 +21,34 @@ void Tokenization(char *pLine, Firm *pFirm){
     pFirm -> rowID = atoi(token);
 
     token = strtok(NULL, ",");
-    // strcpy(pFirm -> orderID, token);
-    strncpy(pFirm->orderID, token, sizeof(pFirm->orderID) - 1);
+    AssignStringValues(&pFirm->orderID, token);
 
     token = strtok(NULL, ",");
-    //strcpy(pFirm -> orderDate, token);
-    strncpy(pFirm->orderDate, token, sizeof(pFirm->orderDate) - 1);
+    AssignStringValues(&pFirm->orderDate, token);
 
     token = strtok(NULL, ",");
-    //strcpy(pFirm -> customer, token);
-    strncpy(pFirm->customer, token, sizeof(pFirm->customer) - 1);
+    AssignStringValues(&pFirm->customer, token);
 
     token = strtok(NULL, ",");
-    //strcpy(pFirm -> city, token);
-    strncpy(pFirm->city, token, sizeof(pFirm->city) - 1);
+    AssignStringValues(&pFirm->city, token);
 
     token = strtok(NULL, ",");
-    //strcpy(pFirm -> state, token);
-    strncpy(pFirm->state, token, sizeof(pFirm->state) - 1);
+    AssignStringValues(&pFirm->state, token);
 
     token = strtok(NULL, ",");
     pFirm -> postalCode = atoi(token);
 
     token = strtok(NULL, ",");
-    //strcpy(pFirm -> region, token);
-    strncpy(pFirm->region, token, sizeof(pFirm->region) - 1);
+    AssignStringValues(&pFirm->region, token);
 
     token = strtok(NULL, ",");
-    //strcpy(pFirm -> productID, token);
-    strncpy(pFirm->productID, token, sizeof(pFirm->productID) - 1);
+    AssignStringValues(&pFirm->productID, token);
 
     token = strtok(NULL, ",");
-    //strcpy(pFirm -> category, token);
-    strncpy(pFirm->category, token, sizeof(pFirm->category) - 1);
+    AssignStringValues(&pFirm->category,token);
 
     token = strtok(NULL, ",");
-    //strcpy(pFirm -> subCategory, token);
-    strncpy(pFirm->subCategory, token, sizeof(pFirm->subCategory) - 1);
+    AssignStringValues(&pFirm->subCategory, token);
 
     token = strtok(NULL, ",");
     pFirm -> price = atof(token);
@@ -62,9 +61,9 @@ void Serialize(FILE *csvFileHolder, FILE *binaryFileHolder){
     fwrite(currentLine, strlen(currentLine), 1, binaryFileHolder);
 
     while(fgets(currentLine, MAX_LINE_LENGTH, csvFileHolder) != NULL){
-        Firm firm;
+        Firm firm = {0};
         Tokenization(currentLine, &firm);
-        fwrite(&firm, sizeof(firm), 1, binaryFileHolder);
+        fwrite(&firm, sizeof(Firm), 1, binaryFileHolder);
     }
 }
 
@@ -75,7 +74,7 @@ void Deserialize(FILE *binaryFileHolder, FILE *csvFileHolder){
     fprintf(csvFileHolder, "%s", currentLine);
 
     Firm firm;
-    while(fread(&firm, sizeof(firm), 1, binaryFileHolder) == 1){
-        fprintf(csvFileHolder, "%d, %s, %s, %s, %s, %s, %d, %s, %s, %s, %s, %.2f\n",firm.rowID, firm.orderID, firm.orderDate, firm.customer, firm.city, firm.state, firm.postalCode, firm.region, firm.productID, firm.category, firm.subCategory, firm.price);
+    while(fread(&firm, sizeof(Firm), 1, binaryFileHolder) == 1){
+        fprintf(csvFileHolder, "%d,%s,%s,%s,%s,%s,%d,%s,%s,%s,%s,%.2f\n",firm.rowID, firm.orderID, firm.orderDate, firm.customer, firm.city, firm.state, firm.postalCode, firm.region, firm.productID, firm.category, firm.subCategory, firm.price);
     }
 }
