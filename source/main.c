@@ -1,33 +1,61 @@
 #include <stdio.h>
-#include "../headers/file-managment.h"
+#include <stdlib.h>
+#include <stdbool.h>
+#include "../headers/getopt.h"
+#include "../headers/getopt.c"
 
-int main(){
-    FILE *inputFile = fopen("../data/sales.csv", "r");
-    FILE *outputFile = fopen("../data/sales.bin", "wb");
+#include "../headers/file-operation-managment.h"
+
+FILE* GettingInputFile(){
+    char directoryPath[1024];
+    FILE *shallowFileCopy;
+    bool binary = false; 
     
-    if(inputFile == NULL || outputFile == NULL){
-        printf("Error");
+    printf("Please, provide the program with the directory path of the file you want to work with.\nDirectory path: ");   
+    fgets(directoryPath, 1024, stdin);
+    printf("%s", directoryPath);
+    directoryPath[strcspn(directoryPath, "\n")] = '\0';
+    
+    if(strlen(directoryPath)<=4){
+        printf("Error: Invalid file path format!");
         exit(1);
     }
 
-    Serialize(inputFile, outputFile);
+    if(strcmp(directoryPath + strlen(directoryPath)-4, ".bin") == 0){
+        shallowFileCopy = fopen(directoryPath, "rb");
+        binary = true;
+    } else{
+        shallowFileCopy = fopen(directoryPath, "r");
+    }
 
-    fclose(inputFile);
-    fclose(outputFile);
+    shallowFileCopy = fopen(directoryPath, "r");
 
-    inputFile = fopen("../data/sales.bin", "rb");
-    outputFile = fopen("../data/sales-test.csv", "w");
-
-    if(inputFile == NULL || outputFile == NULL){
-        printf("Error");
+    if(shallowFileCopy == NULL){
+        printf("Error: The directory path that you have provided is invalid or incorrect! Please, try again.");
         exit(1);
     }
 
-    Deserialize(inputFile, outputFile);
+    fclose(shallowFileCopy);
+    if(binary){
+        return fopen(directoryPath, "rb");
+    } else {
+        return fopen(directoryPath, "r");
+    }
+    
+}
 
-    fclose(inputFile);
-    fclose(outputFile);
+int main(int argc, char *argv[]){
+    int indexOption = 0;
+    FILE *inputFile;
+    FILE *outputFile; 
 
-    return 0;
+    while((indexOption = getopt(argc, argv, "f")) != -1){
+        switch(indexOption){
+            case 'f': 
+                inputFile = GettingInputFile();
+                printf("Succesful operation!");
+            ; break;   
+        }
+    }
 }
 
